@@ -23,8 +23,10 @@ namespace(:worker) do
     # all received messages have been processed or 10 seconds have passed
     at_exit do
       puts "#at_exit callback reached!"
-      # list all subscribers and stop them
-      Pubsub.new.client.list_subscriptions.each(&:stop)
+      # list all subscribers and deletes/stop them
+      Pubsub.new.client.list_subscriptions.each(&:delete)
+      puts "Subscriptions stopped and deleted!"
+      puts "Bye!"
     end
 
     # Start enqueing jobs
@@ -40,7 +42,6 @@ namespace(:worker) do
       time_passed += 1
       jobs_per_second.times.each { GenericJob.perform_later(error_chance) }
       sleep(1)
-      Pubsub.new.client.list_subscriptions.each(&:stop)
     end
   end
 end

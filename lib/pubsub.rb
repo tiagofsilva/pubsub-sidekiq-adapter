@@ -10,7 +10,6 @@ class Pubsub
   def initialize
     @topics = {}
     @subscriptions = {}
-    @subscribers = {}
   end
 
   # @param topic [JSON] The serialized job
@@ -41,8 +40,6 @@ class Pubsub
           end
           .start
       end
-
-    @subscribers[queue_name] = @subscriber
   end
 
   # Creates and memoizes a client.
@@ -98,10 +95,6 @@ class Pubsub
     def after_retries(&block)
       @after_retries = block
       self
-    end
-
-    def stop(wait_secs)
-      @subscriber.stop!(wait_secs)
     end
   end
 end
