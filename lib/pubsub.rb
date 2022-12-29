@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-
-require("google/cloud/pubsub")
+require "google/cloud/pubsub"
 
 class Pubsub
   MORGUE_QUEUE = :morgue
@@ -12,9 +11,6 @@ class Pubsub
     @subscriptions = {}
   end
 
-  # @param topic [JSON] The serialized job
-  # @param queue_name [String] The topic name
-  # @param at [Time] The time when this job should be executed (optional)
   def publish(job_data, queue_name:)
     topic = find_or_create_topic(queue_name)
     subscription = find_or_create_subscription_for_topic(topic, name: queue_name)
@@ -42,22 +38,16 @@ class Pubsub
       end
   end
 
-  # Creates and memoizes a client.
-  #
-  # @return [Google::Cloud::PubSub]
   def client
     @client ||= Google::Cloud::PubSub.new(project_id: "project-tiago")
   end
 
   private
 
-  # @param name [String] The name of the topic to find or create
   def find_or_create_topic(name)
     @topics[name] ||= client.topic(name) || client.create_topic(name)
   end
 
-  # @param topic [Pubsub::Topic] The subscription to find or create for a given topic
-  # @param name [String] The name of the topic to find or create
   def find_or_create_subscription_for_topic(topic, name:)
     @subscriptions[name] ||= topic.subscription(name) || topic.subscribe(name)
   end
